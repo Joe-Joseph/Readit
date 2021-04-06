@@ -8,7 +8,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
     if (!token) throw new Error("Unauthenticated");
 
-    const { username }: any = jwt.verify(token, process.env.TOKEN_KEY);
+    const { username }: any = jwt.verify(token, process.env.TOKEN_KEY!);
 
     const user = await User.findOne({ username });
 

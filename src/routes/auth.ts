@@ -62,7 +62,7 @@ const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Incorrect credentials" });
     }
 
-    const token = jwt.sign({ username }, process.env.TOKEN_KEY);
+    const token = jwt.sign({ username }, process.env.TOKEN_KEY!);
 
     res.set(
       "set-cookie",
@@ -75,11 +75,13 @@ const login = async (req: Request, res: Response) => {
       })
     );
 
-    res.status(200).json({ user });
-  } catch (error) {}
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ error: "something went wrong" });
+  }
 };
 
-const me = async (req: Request, res: Response) => {
+const me = async (_: Request, res: Response) => {
   return res.json(res.locals.user);
 };
 
