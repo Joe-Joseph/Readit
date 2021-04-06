@@ -5,6 +5,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth";
+import postsRoutes from "./routes/posts";
+import subsRoutes from "./routes/subs";
 import trim from "./middleware/trim";
 
 const app = express();
@@ -16,6 +18,8 @@ app.use(cookieParser());
 
 app.get("/", (req, res) => res.send("Welcome to readit!!"));
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api/subs", subsRoutes);
 
 const PORT = process.env.PORT || 8000;
 
