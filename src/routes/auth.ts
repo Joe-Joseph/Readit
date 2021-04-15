@@ -10,6 +10,13 @@ import auth from "../middleware/auth";
 
 dotenv.config();
 
+const mapErrors = (errors: Object[]) => {
+  return errors.reduce((prev: any, err: any) => {
+    prev[err.property] = Object.entries(err.constraints)[0][1];
+    return prev;
+  }, {});
+};
+
 const register = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;
 
@@ -31,7 +38,9 @@ const register = async (req: Request, res: Response) => {
 
     errors = await validate(user);
 
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (errors.length > 0) {
+      return res.status(400).json(mapErrors(errors));
+    }
     await user.save();
 
     // Return tehe user
@@ -54,12 +63,13 @@ const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: errors });
     }
     const user = await User.findOne({ username });
-    if (!user) return res.status(401).json({ error: "Incorrect credentials" });
+    if (!user)
+      return res.status(401).json({ username: "Incorrect credentials" });
 
-    const passwordMatches = bcrypt.compare(password, user.password);
+    const passwordMatches = await bcrypt.compare(password, user.password);
 
     if (!passwordMatches) {
-      return res.status(401).json({ error: "Incorrect credentials" });
+      return res.status(401).json({ password: "Incorrect credentials" });
     }
 
     const token = jwt.sign({ username }, process.env.TOKEN_KEY!);
